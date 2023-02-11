@@ -128,5 +128,40 @@ void correctness(){
 }
 
 void performance(){
+    int n = 50000;
 
+    srand(time(NULL));
+    int* a;
+    a = (int*)malloc(n*sizeof(int));
+    for (int i = 0; i < n; i++){
+        int random_number = rand() % 50000 + 1;
+        a[i] = random_number;
+    }
+
+    int* b;
+    b = (int*)malloc(n*sizeof(int));
+    memcpy(b, a, n*sizeof(int));
+
+
+    clock_t start, end;
+    double time1, time2;
+
+    start = clock();
+    selection_sort(b);
+    end = clock();
+    time1 = (double)(end - start) / CLOCKS_PER_SEC;
+    printf("It takes %f seconds to sort the array by selection sort.\n", time1);
+
+    //reset arr
+    
+    memcpy(b, a, n*sizeof(int));
+
+    start = clock();
+    quick_sort(b, 0, n-1);
+    end = clock();
+    time2 = (double)(end - start) / CLOCKS_PER_SEC;
+    printf("It takes %f seconds to sort the array by quick sort.\n", time2);
+
+    //BRO NOW IM FEELIN HELLA RETARDED BECAUSE QUICK IS NOW SLOWER THAN SELECT WHAAAT HAHAHA           ..fuck
+    //im gonna kms
 }
