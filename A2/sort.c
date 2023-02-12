@@ -34,11 +34,9 @@ void swap(int *p1, int *p2){
     *p1 = temp;
 }
 
-void selection_sort(int *a)
+void selection_sort(int *a, int left, int right)
 {
     // your implementation
-    int right = 9;
-    int left = 0;
     int i, j, k;
     int n = right - left + 1;
     for (i = 0; i < n; ++i) {
@@ -109,7 +107,7 @@ void correctness(){
     b = (int*)malloc(n*sizeof(int));
     memcpy(b, a, n*sizeof(int));
     
-    selection_sort(b);
+    selection_sort(b, 0, n-1);
     printf("sorted by selection sort:\n");
     printarr(b, n);
 
@@ -147,7 +145,7 @@ void performance(){
     double time1, time2;
 
     start = clock();
-    selection_sort(b);
+    selection_sort(b, 0, n-1);
     end = clock();
     time1 = (double)(end - start) / CLOCKS_PER_SEC;
     printf("It takes %f seconds to sort the array by selection sort.\n", time1);
@@ -161,7 +159,4 @@ void performance(){
     end = clock();
     time2 = (double)(end - start) / CLOCKS_PER_SEC;
     printf("It takes %f seconds to sort the array by quick sort.\n", time2);
-
-    //BRO NOW IM FEELIN HELLA RETARDED BECAUSE QUICK IS NOW SLOWER THAN SELECT WHAAAT HAHAHA           ..fuck
-    //im gonna kms
 }
