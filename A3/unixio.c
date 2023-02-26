@@ -48,39 +48,36 @@ int main( int argc, char *argv[] ) {
         exit(EXIT_FAILURE);
     }
 
-    FILE *a3_out = fopen("a3output.txt", "w");
-
     if (typeofcalls == 1) {
         // Use unix I/O system calls to
         // implementation
-
-        startTimer();
 
         int fd = open(file_name, O_RDONLY);
         if(fd == -1){
             fprintf(stderr, "filename of: %s, not found", file_name);
             exit(EXIT_FAILURE);
         }
+        
+        char *buf = malloc(bytes);
+
+        startTimer();
 
         int file_read = 0;
 
-        while(!file_read){
-            char buf[bytes+1];
-            int read_bytes = read(fd, &buf, bytes);
-
-            if(read_bytes == 0){
-                file_read = 1;
+        while(1){
+            if(!read(fd, buf, bytes)){
+                break;
             }
         }
 
         printf("Using Unix I/O system calls to read a file by %i bytes per read\n", bytes);
         stopTimer("Unix reads");
+
+        close(fd);
     } else if (typeofcalls == 0) {
         // Use standard I/O
         // implementation
         // if bytes == 1 then use fgetc else fread
-
-        startTimer();
 
         FILE *fd = fopen(file_name, "r");
         if(fd == NULL){
@@ -89,24 +86,34 @@ int main( int argc, char *argv[] ) {
         }
 
         char c;
+        char *buf = malloc(bytes);
 
-        do{
-            c = fgetc(fd);
-            if(feof(fd));
-                break;
-        }while(1);
-        
-        fclose(fd);
+        startTimer();
+
+        if(bytes == 1){
+            do{
+                c = fgetc(fd);
+                if(feof(fd)){
+                    break;
+                }
+            }while(1);
+        } else {                            
+            while(1){
+                if(!fread(buf, bytes, 1, fd)){
+                    break;
+                }
+            }
+        }
         
         printf("Using C functions to read a file by %i bytes per fread\n", bytes);
         stopTimer("C fread");
+        
+        fclose(fd);
 
     } else {
         fprintf(stderr, "usage: %s filename bytes typeofcalls\n", argv[0]);
         exit(EXIT_FAILURE);
     }
-
-    fclose(a3_out);
 
     return 0;
 }
