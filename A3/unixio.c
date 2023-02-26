@@ -5,6 +5,7 @@
 #include <stdio.h> // fopen, fread
 #include <stdlib.h>
 #include <sys/time.h> // gettimeofday
+#include <string.h>
 
 ssize_t read(int fd, void *buf, size_t count);
 int close(int fd); 
@@ -41,7 +42,7 @@ int main( int argc, char *argv[] ) {
         exit(EXIT_FAILURE);
     }
 
-    int typeofcalls = atoi(argv[3]);
+    typeofcalls = atoi(argv[3]);
     if(typeofcalls == 0 && strcmp(argv[3], "0")!=0){
         fprintf(stderr, "usage: %s filename bytes typeofcalls\n", argv[0]);
         exit(EXIT_FAILURE);
@@ -72,6 +73,7 @@ int main( int argc, char *argv[] ) {
             }
         }
 
+        printf("Using Unix I/O system calls to read a file by %i bytes per read\n", bytes);
         stopTimer("Unix reads");
     } else if (typeofcalls == 0) {
         // Use standard I/O
@@ -80,7 +82,23 @@ int main( int argc, char *argv[] ) {
 
         startTimer();
 
+        FILE *fd = fopen(file_name, "r");
+        if(fd == NULL){
+            fprintf(stderr, "filename of: %s, not found", file_name);
+            exit(EXIT_FAILURE);
+        }
 
+        char c;
+
+        do{
+            c = fgetc(fd);
+            if(feof(fd));
+                break;
+        }while(1);
+        
+        fclose(fd);
+        
+        printf("Using C functions to read a file by %i bytes per fread\n", bytes);
         stopTimer("C fread");
 
     } else {
