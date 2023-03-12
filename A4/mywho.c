@@ -3,18 +3,30 @@
  *         - formats time nicely
  */
 
+#include <stdlib.h>
 #include <stdio.h>
 #include <utmp.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <time.h>
+#include <pwd.h>
+#include <string.h>
 
 #define SHOWHOST // include remote machine on output
+
+void show_info(struct utmp *utbufp, char* curr_user);
+void show_time(long timeval);
 
 int main() {
     struct utmp current_record; // read info into here
     int utmpfd; // read from this descriptor
     int reclen = sizeof(current_record);
+
+    struct passwd *pw;
+    char* username;
+    
+    pw = getpwuid(getuid()); 
+    username = pw->pw_name;
 
     if ((utmpfd = open(UTMP_FILE, O_RDONLY)) == -1) {
         perror(UTMP_FILE); // UTMP_FILE is in utmp.h
@@ -22,7 +34,7 @@ int main() {
     }
 
     while (read(utmpfd, &current_record, reclen) == reclen) {
-        show_info(&current_record);
+        show_info(&current_record, username);
     }
     close(utmpfd);
 
@@ -34,22 +46,25 @@ int main() {
  * displays contents of the utmp struct in human readable form
  * displays nothing if record has no user name
  */
-void show_info(struct utmp *utbufp) {
+void show_info(struct utmp *utbufp, char* curr_user) {
     if (utbufp->ut_type != USER_PROCESS) { // users only
         return;
     }
-    printf("%-8.8s", utbufp->ut_name); // the username
-    printf(" "); // a space
-    printf("%-8.8s", utbufp->ut_line); // the tty
-    printf(" "); // a space
-    show_time(utbufp->ut_time); // display time
-    printf(" "); // a space
-#ifdef SHOWHOST
-    if (utbufp->ut_host[0] != '\0') {
-        printf("(%s)", utbufp->ut_host); // the host
+    if(strcmp(utbufp->ut_name, curr_user) == 0){
+        printf("%-8.8s", utbufp->ut_name); // the username
+        printf(" "); // a space
+        printf("%-8.8s", utbufp->ut_line); // the tty
+        printf(" "); // a space
+        show_time(utbufp->ut_time); // display time
+        printf(" "); // a space
+    
+    #ifdef SHOWHOST
+        if (utbufp->ut_host[0] != '\0') {
+            printf("(%s)", utbufp->ut_host); // the host
+        }
+    #endif
+        printf("\n"); // newline
     }
-#endif
-    printf("\n"); // newline
 }
 
 /*
