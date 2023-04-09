@@ -77,10 +77,10 @@ int main(){
         test_count++;
     }
 
-    
     // Clean up the curses library
     endwin();
-//all elapsed, min, max, average
+
+    //all elapsed, min, max, average
     double sum = 0;
     for(int i = 0; i < 10; i++){
         printf("%2d.\t %.4f \n", i+1, resp_spd[i]);
