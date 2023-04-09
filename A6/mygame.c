@@ -67,6 +67,13 @@ int main(){
     }
 
     //all elapsed, min, max, average
+    double sum = 0;
+    for(int i = 0; i < 10; i++){
+        printf("%d. %.4f", i, resp_spd[i]);
+        sum = resp_spd[i];
+    }
+
+    printf("max %.4f min %.4f avg %.4f", max_spd, min_spd, sum/10);
 
     // Clean up the curses library
     endwin();
