@@ -2,6 +2,7 @@
 #include <time.h> // gettimeofday and seeding rand
 #include <sys/time.h>
 #include <stdlib.h> // for rand
+#include <string.h>
 
 int main(){
 
@@ -23,13 +24,16 @@ int main(){
 
     int delay;
 
+    //Get screen dimensions
+    int y,x;
+    getmaxyx(stdscr, y, x);
+
     while(test_count < 10){
         int tar_num = rand()%36;
         delay = rand() % 3 + 1;
 
         clear();
-
-        printw("TEST " + test_count+1); //maybe center
+        mvprintw(y/2, (x-6)/2, "TEST %i", test_count+1); //IT HAS BEEN CENTERED, "6" is just the length of "TEST #"
         refresh();
         napms(delay*1000);
 
@@ -41,11 +45,18 @@ int main(){
 
         struct timeval start, end;
 
-        //printw(); // - put the char at a random point on the screen 
+        clear(); //Clear screen before char is placed
+        mvprintw((rand() % y), (rand() % x), "%c", target); // places the char at a random place on screen
         refresh();
-
         gettimeofday( &start, NULL );
         //get wait for correct char
+        while(1){
+            ch = getch();
+
+            if(ch == target){
+                break;
+            }
+        }
         gettimeofday( &end, NULL );
 
         long seconds = end.tv_sec - start.tv_sec;
@@ -66,17 +77,17 @@ int main(){
         test_count++;
     }
 
-    //all elapsed, min, max, average
-    double sum = 0;
-    for(int i = 0; i < 10; i++){
-        printf("%d. %.4f", i, resp_spd[i]);
-        sum = resp_spd[i];
-    }
-
-    printf("max %.4f min %.4f avg %.4f", max_spd, min_spd, sum/10);
-
+    
     // Clean up the curses library
     endwin();
+//all elapsed, min, max, average
+    double sum = 0;
+    for(int i = 0; i < 10; i++){
+        printf("%2d.\t %.4f \n", i+1, resp_spd[i]);
+        sum += resp_spd[i];
+    }
+
+    printf("max: %.4f min: %.4f avg: %.4f \n", max_spd, min_spd, sum/10);
 
     return 0;
 }
